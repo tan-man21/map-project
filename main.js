@@ -11,11 +11,11 @@ async function getCoords(){
     return [pos.coords.latitude, pos.coords.longitude]
 }
 
-console.log(getCoords())
-
 //Select Business Type
 function saveSelection(){
     selectBusiness = document.getElementById('businesses');
     output = selectBusiness.value;
     alert(output)
 }
+
+//Creating Array of Business Objects
