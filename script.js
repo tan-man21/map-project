@@ -32,6 +32,8 @@ const userMap = {
 
     //Making an array and placing markers
     getBusinessInfo: function (object){
+        this.clearMarkers();
+
         for(i = 0; i < object.length; i++){
             this.businessInfo[i] = ({
                 name: object[i].name,
@@ -40,9 +42,18 @@ const userMap = {
                 long: object[i].geocodes.main.longitude,
             })
         }
-        for(i = 0; i < this.businessInfo; i++){
-            L.marker([this.businessInfo[i].lat, this.businessInfo[i].long]).addTo(this.displayMap).bindPopup(`<p>${this.businessInfo.name}</p>`)
+        for(i = 0; i < this.businessInfo.length; i++){
+            L.marker([this.businessInfo[i].lat, this.businessInfo[i].long]).addTo(this.displayMap).bindPopup(`<p>${this.businessInfo[i].name}</p>`)
         }
+    },
+
+    clearMarkers: function () {
+        // Iterate through markers and remove them from the map
+        this.displayMap.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+                this.displayMap.removeLayer(layer);
+            }
+        });
     },
 }
 
