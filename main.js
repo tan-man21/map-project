@@ -2,6 +2,7 @@
 //1 - Obtain User's Current Location
 //2 - Map the Location on Leaflet
 //3 - User should be able to select a business type from a list and map 5 nearest locations on the map using Foursquare API
+let coordinates = []
 
 //Get User's Current Location
 async function getCoords(){
@@ -12,43 +13,57 @@ async function getCoords(){
 }
 
 //Select Business Type
-function saveSelection(){
+async function saveSelection(){
     selectBusiness = document.getElementById('businesses');
     output = selectBusiness.value;
+    let result;
     if(output === 'restaurant'){
-        console.log(getRestaurants())
+        result = await getRestaurants()
     }else if(output === 'coffee'){
-        console.log(getCoffee())
+        result = await getCoffee()
     }else if(output === 'hotel'){
-        console.log(getHotels)
+        result = await getHotels()
     }else if(output === 'market'){
-        console.log(getMarkets)
+        result = getMarkets()
+    }
+
+    const newArray = result.results.map(item => ({
+        itemName: item.name,
+        itemLocation: item.location,
+        itemPoint: item.geocodes.main
+    }));
+
+    // Call getCoords and wait for its completion
+    const userCoords = await getCoords();
+
+    // Check if userCoords is not null before using it
+    if (userCoords) {
+        for (let i = 0; i < newArray.length; i++) {
+            coordinates.push(newArray[i].itemPoint);
+        }
+
+        return coordinates
+    } else {
+        console.error('Failed to get user coordinates.');
     }
 }
-
 // Fetching Local Restaurants
-async function getRestaurants (){
-    let coordinates = await getCoords()
-    const options = await {
-        method: 'GET',
-        headers: {
-        accept: 'application/json',
-        Authorization: 'fsq3mWIUw5lI9kr5aXW1Ta/ESQSIq7sPBWWIewtV2jLNPF4='
-        }
-    };
-    
-    await fetch(`https://api.foursquare.com/v3/places/search?query=restaurants&ll=${coordinates}&radius=5000&limit=5`, options)
-        .then(response => response.json())
-        .then(data => {
-            const mappedData = data.results.map(venue => ({
-                name: venue.name,
-                location: venue.location,
-            }));
-            console.log(mappedData);
-            return mappedData;
-        })
-        .catch(err => console.error(err));
-};
+async function getRestaurants() {
+        let coordinates = await getCoords();
+        const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: 'fsq3mWIUw5lI9kr5aXW1Ta/ESQSIq7sPBWWIewtV2jLNPF4='
+            }
+        };
+
+        const response = await fetch(`https://api.foursquare.com/v3/places/search?query=restaurants&ll=${coordinates}&radius=5000&limit=5`, options);
+        const data = await response.json();
+
+        // Return the entire data object
+        return data;
+    }
 
 //Fetching Local Coffee Shops
 async function getCoffee (){
@@ -61,17 +76,11 @@ async function getCoffee (){
         }
     };
     
-    await fetch(`https://api.foursquare.com/v3/places/search?query=coffee&ll=&${coordinates}radius=5000&limit=5`, options)
-        .then(response => response.json())
-        .then(data => {
-            const mappedData = data.results.map(venue => ({
-                name: venue.name,
-                location: venue.location,
-            }))
-            console.log(mappedData);
-            return mappedData;
-        })
-        .catch(err => console.error(err));
+    const response = await fetch(`https://api.foursquare.com/v3/places/search?query=restaurants&ll=${coordinates}&radius=5000&limit=5`, options);
+        const data = await response.json();
+
+        // Return the entire data object
+        return data;
 };
 
 
@@ -86,17 +95,11 @@ async function getHotels (){
         }
       };
       
-      await fetch(`https://api.foursquare.com/v3/places/search?query=hotels&ll=${coordinates}&radius=5000&limit=5`, options)
-        .then(response => response.json())
-        .then(data => {
-            const mappedData = data.results.map(venue => ({
-                name: venue.name,
-                location: venue.location,
-            }))
-            console.log(mappedData);
-            return mappedData;
-        })
-        .catch(err => console.error(err));
+      const response = await fetch(`https://api.foursquare.com/v3/places/search?query=restaurants&ll=${coordinates}&radius=5000&limit=5`, options);
+        const data = await response.json();
+
+        // Return the entire data object
+        return data;
 };
 
 
@@ -111,18 +114,9 @@ async function getMarkets(){
         }
       };
       
-      await fetch(`https://api.foursquare.com/v3/places/search?query=market&ll=${coordinates}&radius=5000&limit=5`, options)
-        .then(response => response.json())
-        .then(data => {
-            const mappedData = data.results.map(venue => ({
-                name: venue.name,
-                location: venue.location,
-            }))
-            console.log(mappedData);
-            return mappedData;
-        })
-        .catch(err => console.error(err));
+      const response = await fetch(`https://api.foursquare.com/v3/places/search?query=restaurants&ll=${coordinates}&radius=5000&limit=5`, options);
+        const data = await response.json();
+
+        // Return the entire data object
+        return data;
 };
-
-
-//Creating Array of Business Objects
